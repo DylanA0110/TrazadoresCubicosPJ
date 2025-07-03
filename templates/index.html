@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trazadores Cúbicos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e0e7ff;
+            --secondary: #3a0ca3;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .title {
+            color: var(--secondary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .select-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-1px);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .result-step {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent);
+            background-color: var(--light);
+            border-radius: 8px;
+        }
+        
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .matrix-container {
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .matrix {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 1rem;
+            border-radius: 8px;
+            white-space: pre;
+            margin-bottom: 0.5rem;
+        }
+        
+        .spline-card {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: white;
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .spline-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.75rem;
+        }
+        
+        .spline-expression {
+            font-family: 'Courier New', monospace;
+            background: var(--light);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 0.5rem 0;
+        }
+        
+        .coeff-list {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        
+        .coeff-item {
+            background: var(--primary-light);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-danger {
+            background-color: #fef2f2;
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+        
+        .alert-success {
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            color: #16a34a;
+        }
+        
+        .icon {
+            font-size: 1.25rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title"><i class="fas fa-project-diagram"></i> Trazadores Cúbicos</h1>
+            <p class="subtitle">Interpolación por splines cúbicos con diferentes condiciones de frontera</p>
+        </header>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-calculator"></i> Parámetros de Cálculo</h2>
+            
+            <div class="form-group">
+                <label for="funcion" class="form-label">Función f(x):</label>
+                <input type="text" id="funcion" class="form-control" placeholder="Ej: Math.sin(x) + 3/(x**2 + 4)">
+                <small class="text-muted">Usa sintaxis de JavaScript para la función (ej: Math.sin, Math.exp, etc.)</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="puntos-x" class="form-label">Puntos x (separados por comas):</label>
+                <input type="text" id="puntos-x" class="form-control" placeholder="Ej: -1, 0, 1, 3">
+                <small class="text-muted">Los puntos deben estar en orden creciente</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="condiciones" class="form-label">Condiciones de frontera:</label>
+                <select id="condiciones" class="form-control select-control">
+                    <option value="natural">Natural (S''=0 en los extremos)</option>
+                    <option value="sujeta">Sujeta (S'=f' en los extremos)</option>
+                </select>
+            </div>
+            
+            <button id="calcular-btn" class="btn btn-primary btn-block">
+                <i class="fas fa-play"></i> Calcular Trazadores
+            </button>
+        </div>
+        
+        <div id="results" class="card" style="display: none;">
+            <h2 class="card-title"><i class="fas fa-chart-line"></i> Resultados</h2>
+            <div id="results-content"></div>
+        </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calcularBtn = document.getElementById('calcular-btn');
+        const resultsDiv = document.getElementById('results');
+        const resultsContent = document.getElementById('results-content');
+        
+        calcularBtn.addEventListener('click', function() {
+            const funcion = document.getElementById('funcion').value;
+            const puntosStr = document.getElementById('puntos-x').value;
+            const condiciones = document.getElementById('condiciones').value;
+            
+            // Validar entrada
+            if (!funcion || !puntosStr) {
+                showAlert('Por favor ingrese la función y los puntos x', 'danger');
+                return;
+            }
+            
+            // Procesar puntos x
+            let puntos_x;
+            try {
+                puntos_x = puntosStr.split(',')
+                                  .map(x => x.trim())
+                                  .filter(x => x !== '')
+                                  .map(x => parseFloat(x));
+                
+                // Validar números
+                if (puntos_x.some(isNaN)) {
+                    throw new Error('Contiene valores no numéricos');
+                }
+                
+                // Verificar orden creciente
+                for (let i = 1; i < puntos_x.length; i++) {
+                    if (puntos_x[i] <= puntos_x[i-1]) {
+                        throw new Error('Los puntos deben estar en orden creciente');
+                    }
+                }
+                
+                if (puntos_x.length < 2) {
+                    throw new Error('Se necesitan al menos 2 puntos');
+                }
+            } catch (error) {
+                showAlert(`Error en los puntos x: ${error.message}`, 'danger');
+                return;
+            }
+            
+            // Mostrar carga
+            calcularBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculando...';
+            calcularBtn.disabled = true;
+            
+            // Preparar datos para enviar
+            const requestData = {
+                funcion: funcion,
+                puntos_x: puntos_x,  // Enviar como array
+                condiciones: condiciones
+            };
+            
+            // Enviar al servidor
+            fetch('/calcular', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    mostrarResultados(data);
+                    resultsDiv.style.display = 'block';
+                    window.scrollTo({
+                        top: resultsDiv.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    throw new Error(data.error || 'Error en el cálculo');
+                }
+            })
+            .catch(error => {
+                showAlert(`Error en el cálculo: ${error.message}`, 'danger');
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                calcularBtn.innerHTML = '<i class="fas fa-play"></i> Calcular Trazadores';
+                calcularBtn.disabled = false;
+            });
+        });
+        
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            
+            const icon = type === 'danger' 
+                ? '<i class="fas fa-exclamation-circle icon"></i>'
+                : '<i class="fas fa-check-circle icon"></i>';
+            
+            alertDiv.innerHTML = `${icon} ${message}`;
+            resultsContent.insertBefore(alertDiv, resultsContent.firstChild);
+            resultsDiv.style.display = 'block';
+            
+            window.scrollTo({
+                top: alertDiv.offsetTop - 20,
+                behavior: 'smooth'
+            });
+            
+            setTimeout(() => {
+                alertDiv.remove();
+                if (resultsContent.children.length === 0) {
+                    resultsDiv.style.display = 'none';
+                }
+            }, 5000);
+        }
+        
+        function mostrarResultados(data) {
+            let html = '';
+            
+            // Encabezado
+            html += `<div class="alert alert-success">
+    <i class="fas fa-check-circle icon"></i> Cálculo completado para ${data.splines.length + 1} puntos
+</div>`;
+
+            
+            // Pasos del cálculo
+            if (data.steps?.length) {
+                html += `<div class="result-step">
+                    <h3 class="result-title"><i class="fas fa-cogs"></i> Proceso de Cálculo</h3>`;
+                
+                data.steps.forEach(step => {
+                    html += `<div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.5rem; color: var(--primary);">${step.title}</h4>`;
+                    
+                    if (typeof step.content === 'string') {
+                        html += `<p>${step.content}</p>`;
+                    } else if (step.type === 'matrix') {
+                        html += `<div class="matrix-container">
+                            <p>Matriz A:</p>
+                            <div class="matrix">${formatMatrix(step.content.A)}</div>
+                            <p>Vector v:</p>
+                            <div class="matrix">${JSON.stringify(step.content.v, null, 2)}</div>
+                        </div>`;
+                    } else if (typeof step.content === 'object') {
+                        for (const [key, value] of Object.entries(step.content)) {
+                            html += `<p><strong>${key}:</strong> ${Array.isArray(value) ? formatMatrix(value) : value}</p>`;
+                        }
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Splines
+            if (data.splines?.length) {
+                html += `<div class="result-step">
+                    <h3 class="result-title"><i class="fas fa-project-diagram"></i> Trazadores Cúbicos</h3>
+                    <p>${data.splines.length} segmentos calculados:</p>`;
+                
+                data.splines.forEach((spline, i) => {
+                    html += `<div class="spline-card">
+                        <h4 class="spline-title">S<sub>${i}</sub>(x) ∈ [${spline.x0?.toFixed(4)}, ${spline.x1?.toFixed(4)}]</h4>
+                        <div class="spline-expression">${spline.expresion}</div>
+                        <div class="coeff-list">
+                            <span class="coeff-item">a = ${spline.a?.toFixed(6) ?? 'N/A'}</span>
+                            <span class="coeff-item">b = ${spline.b?.toFixed(6) ?? 'N/A'}</span>
+                            <span class="coeff-item">c = ${spline.c?.toFixed(6) ?? 'N/A'}</span>
+                            <span class="coeff-item">d = ${spline.d?.toFixed(6) ?? 'N/A'}</span>
+                        </div>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Derivadas
+            if (data.derivadas) {
+                html += `<div class="result-step">
+                    <h3 class="result-title"><i class="fas fa-sliders-h"></i> Derivadas</h3>`;
+                
+                if (data.derivadas.f_prime_x0 !== undefined) {
+                    html += `<p><strong>f'(x₀):</strong> ${data.derivadas.f_prime_x0.toFixed(6)}</p>`;
+                }
+                if (data.derivadas.f_prime_xn !== undefined) {
+                    html += `<p><strong>f'(xₙ):</strong> ${data.derivadas.f_prime_xn.toFixed(6)}</p>`;
+                }
+                html += `</div>`;
+            }
+            
+            // Gráfico
+            if (data.plot_url) {
+                html += `<div class="result-step">
+                    <h3 class="result-title"><i class="fas fa-chart-area"></i> Gráfico</h3>
+                    <img src="${data.plot_url}" alt="Gráfico" style="max-width: 100%; border-radius: 8px;">
+                </div>`;
+            }
+            
+            resultsContent.innerHTML = html;
+        }
+       function formatMatrix(matrix) {
+    if (!matrix || !Array.isArray(matrix) || matrix.length === 0) return '[]';
+    
+    // Si es un vector plano (array de números), conviértelo en una matriz de 1 sola fila
+    if (!Array.isArray(matrix[0])) {
+        matrix = [matrix];
+    }
+
+    const elements = matrix.flat();
+    const maxLen = Math.max(...elements.map(n => {
+        const num = Number(n);
+        return isNaN(num) ? 4 : num.toFixed(4).length;
+    }));
+    
+    return matrix.map(row => {
+        const formattedRow = row.map(n => {
+            const num = Number(n);
+            return isNaN(num) ? 'NaN' : num.toFixed(4).padStart(maxLen);
+        });
+        return `[${formattedRow.join(', ')}]`;
+    }).join('\n');
+}
+
+    });
+</script>
+</body>
+</html>
